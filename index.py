@@ -18,6 +18,13 @@ def new_game():
     global grid
     global grid_original
     global default_grid
+    global minutes
+    global seconds
+    global milliseconds
+
+    minutes = 0
+    seconds = 0
+    milliseconds = 0
 
     grid = getGrid()
 
@@ -125,7 +132,8 @@ def create_screen(win, myFont):
 
 
 def clear_screen(win, myFont):
-    win.fill(backgroud_color)
+    # win.fill(backgroud_color)
+    pygame.draw.rect(win, backgroud_color, (0, 50, 600, 600))
     create_screen(win, myFont)
 
 
@@ -262,20 +270,43 @@ def winTheGame(win, font):
                 return
 
 
+def timer(win, myFont, minutes, seconds):
+    timelabel = myFont.render("{}:{}".format(minutes, seconds), 1, (0,0,0))
+    win.blit(timelabel, (250, 7))
+    pygame.display.update()
+                
+
 def main():
+    global minutes
+    global seconds
+    global milliseconds
+
     new_game()
     pygame.init()
     myFont = pygame.font.Font('font/VarelaRound-Regular.ttf', 35)
     win = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Sudoku by Madha")
+    pygame.display.set_caption("SIDOKU")
     # myFont = pygame.font.SysFont(varela, 35)
+    clock = pygame.time.Clock()
+    win.fill(backgroud_color)
     clear_screen(win, myFont)
 
     while True:
+        timer(win, myFont, minutes, seconds)
+        if milliseconds > 1000:
+            seconds += 1
+            milliseconds -= 1000
+            pygame.draw.rect(win, backgroud_color, (230, 7, 100, 40))
+            # clear_screen(win, myFont)
+        if seconds > 60:
+            minutes += 1
+            seconds -= 60
+        milliseconds += clock.tick_busy_loop(60)
+
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 clicked(win, myFont)
-
+                
                 if validatingSudoku():
                     grid_original = grid
                     winTheGame(win, myFont)
