@@ -17,6 +17,7 @@ buffer = 2
 def new_game():
     global grid
     global grid_original
+    global default_grid
 
     grid = getGrid()
 
@@ -33,6 +34,18 @@ def new_game():
     # ]
 
     grid_original = [
+        [grid[x][y] for y in range(9)] for x in range(len(grid))
+    ]
+
+    default_grid = [
+        [grid[x][y] for y in range(9)] for x in range(len(grid))
+    ]
+
+def clear_grid():
+    global grid
+    global default_grid
+    grid = default_grid
+    default_grid = [
         [grid[x][y] for y in range(9)] for x in range(len(grid))
     ]
 
@@ -93,15 +106,20 @@ def create_screen(win, myFont):
                 win.blit(value, ((j+1)*50 + 15, (i+1)*50 + 5))
 
     button_font = pygame.font.Font('font/VarelaRound-Regular.ttf', 15)
-    pygame.draw.rect(win, button_color, (100, 525, 110, 40), border_radius=20)
+    pygame.draw.rect(win, button_color, (70, 525, 110, 40), border_radius=20)
     value = button_font.render(
         "New Game", True, (255, 255, 255))
-    win.blit(value, (116, 535))
+    win.blit(value, (86, 535))
+    
+    pygame.draw.rect(win, button_color, (220, 525, 110, 40), border_radius=20)
+    value = button_font.render(
+        "Clear", True, (255, 255, 255))
+    win.blit(value, (257, 535))
 
-    pygame.draw.rect(win, button_color, (350, 525, 110, 40), border_radius=20)
+    pygame.draw.rect(win, button_color, (373, 525, 110, 40), border_radius=20)
     value = button_font.render(
         "Solve", True, (255, 255, 255))
-    win.blit(value, (388, 535))
+    win.blit(value, (409, 535))
 
     pygame.display.update()
 
@@ -152,10 +170,13 @@ def clicked(win, myFont):
     else:
         clear_screen(win, myFont)
 
-    if ((pos[0] >= 100 and pos[0] <= 210) and (pos[1] >= 525 and pos[1] <= 565)):
+    if ((pos[0] >= 70 and pos[0] <= 180) and (pos[1] >= 525 and pos[1] <= 565)):
         new_game()
         clear_screen(win, myFont)
-    if ((pos[0] >= 350 and pos[0] <= 460) and (pos[1] >= 525 and pos[1] <= 565)):
+    if ((pos[0] >= 220 and pos[0] <= 330) and (pos[1] >= 525 and pos[1] <= 565)):
+        clear_grid()
+        clear_screen(win, myFont)
+    if ((pos[0] >= 373 and pos[0] <= 484) and (pos[1] >= 525 and pos[1] <= 565)):
         solve(grid)
         clear_screen(win, myFont)
 
@@ -213,9 +234,29 @@ def winTheGame(win, font):
 
     while True:
         for event in pygame.event.get():
+            if event.type == pygame.MOUSEMOTION:
+                position = pygame.mouse.get_pos()
+                button_font = pygame.font.Font(
+                    'font/VarelaRound-Regular.ttf', 15)
+                if ((position[0] >= 70 and position[0] <= 180) and (position[1] >= 525 and position[1] <= 565)):
+                    pygame.draw.rect(win, button_hover,
+                                     (70, 525, 110, 40), border_radius=20)
+                    value = button_font.render(
+                        "New Game", True, backgroud_color)
+                    win.blit(value, (86, 535))
+                    pygame.display.update()
+                else:
+                    pygame.draw.rect(win, button_color,
+                                     (70, 525, 110, 40), border_radius=20)
+                    value = button_font.render(
+                        "New Game", True, (255, 255, 255))
+                    win.blit(value, (86, 535))
+                    pygame.display.update()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                clear_screen(win, font)
-                return
+                pos = pygame.mouse.get_pos()
+                if ((pos[0] >= 70 and pos[0] <= 180) and (pos[1] >= 525 and pos[1] <= 565)):
+                    return
+            
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return
@@ -226,7 +267,7 @@ def main():
     pygame.init()
     myFont = pygame.font.Font('font/VarelaRound-Regular.ttf', 35)
     win = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Sudoku")
+    pygame.display.set_caption("Sudoku by Madha")
     # myFont = pygame.font.SysFont(varela, 35)
     clear_screen(win, myFont)
 
@@ -248,32 +289,45 @@ def main():
                 position = pygame.mouse.get_pos()
                 button_font = pygame.font.Font(
                     'font/VarelaRound-Regular.ttf', 15)
-                if ((position[0] >= 100 and position[0] <= 210) and (position[1] >= 525 and position[1] <= 565)):
+                if ((position[0] >= 70 and position[0] <= 180) and (position[1] >= 525 and position[1] <= 565)):
                     pygame.draw.rect(win, button_hover,
-                                     (100, 525, 110, 40), border_radius=20)
+                                     (70, 525, 110, 40), border_radius=20)
                     value = button_font.render(
                         "New Game", True, backgroud_color)
-                    win.blit(value, (116, 535))
+                    win.blit(value, (86, 535))
                     pygame.display.update()
-                elif ((position[0] >= 350 and position[0] <= 460) and (position[1] >= 525 and position[1] <= 565)):
+                elif ((position[0] >= 220 and position[0] <= 330) and (position[1] >= 525 and position[1] <= 565)):
+                    pygame.draw.rect(win, button_hover, 
+                         (220, 525, 110, 40), border_radius=20)
+                    value = button_font.render(
+                             "Clear", True, (255, 255, 255))
+                    win.blit(value, (257, 535))
+                    pygame.display.update()
+                elif ((position[0] >= 373 and position[0] <= 483) and (position[1] >= 525 and position[1] <= 565)):
                     pygame.draw.rect(win, button_hover,
-                                     (350, 525, 110, 40), border_radius=20)
+                                     (373, 525, 110, 40), border_radius=20)
                     value = button_font.render(
                         "Solve", True, backgroud_color)
-                    win.blit(value, (388, 535))
+                    win.blit(value, (409, 535))
                     pygame.display.update()
                 else:
                     pygame.draw.rect(win, button_color,
-                                     (100, 525, 110, 40), border_radius=20)
+                                     (70, 525, 110, 40), border_radius=20)
                     value = button_font.render(
                         "New Game", True, (255, 255, 255))
-                    win.blit(value, (116, 535))
+                    win.blit(value, (86, 535))
+
+                    pygame.draw.rect(win, button_color, 
+                        (220, 525, 110, 40), border_radius=20)
+                    value = button_font.render(
+                            "Clear", True, (255, 255, 255))
+                    win.blit(value, (257, 535))
 
                     pygame.draw.rect(win, button_color,
-                                     (350, 525, 110, 40), border_radius=20)
+                                     (373, 525, 110, 40), border_radius=20)
                     value = button_font.render(
                         "Solve", True, (255, 255, 255))
-                    win.blit(value, (388, 535))
+                    win.blit(value, (409, 535))
 
                     pygame.display.update()
 
